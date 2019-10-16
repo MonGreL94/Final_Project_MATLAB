@@ -1,6 +1,6 @@
 clear; clc;
 close all;
-img = imread('C:\Users\antonello\Documents\PycharmProjects\StarterProject\checkerboard.jpg');
+img = imread('checkerboard.jpg');
 % thresholded_img = imbinarize(rgb2gray(img), 'adaptive');
 thresholded_img = im2bw(img);
 distance_metric = 'euclidean';
