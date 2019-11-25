@@ -1,33 +1,40 @@
 clear; close all; clc;
+
 im = imread('checkerboard.jpg');
 [th, sg, sgc] = cc_segm(im);
 % figure; imshow(sgc);
 
 metric = 'chessboard';
 
-s = size(sg);
-aux = zeros(s(1) + 1, s(2) + 1, 'double');
-aux(ceil((s(1) + 1) / 2), ceil((s(2) + 1) / 2)) = 1;
+s = size(th);
+s1 = s(1);
+s2 = s(2);
+c1 = ceil(s1 / 2);
+c2 = ceil(s2 / 2);
+aux = zeros(s1, s2, 'double');
+aux(c1, c2) = 1;
 aux = bwdist(aux, metric);
-figure; imshow(imnorm(aux));
+% figure; imshow(imnorm(aux));
 
-tf = bwdist(not(sg), metric);
-tb = bwdist(sg, metric);
+tf = bwdist(not(th), metric);
+tb = bwdist(th, metric);
 dif = tf - tb;
 % figure; imshow(imnorm(dif));
 
-rows = s(1);
-cols = s(2);
-for i=1:400:rows
-    for j=1:400:cols
-        d = fix(abs(dif(i, j)));
-        th = aux;
-        th(:) = 1;
-        th(aux <= d) = 0;
-        th(aux > d + 1) = 0;
-        figure; imshow(th);
+m = min(dif(:));
+
+for i=1:s1
+    for j=1:s2
+        v = dif(i, j);
+        d = ceil(abs(v));
+        subdif = dif(max([1, i - d]):min([s1, i + d]), max([1, j - d]):min([s2, j + d]));
+        subaux = aux(max([c1 - i + 1, c1 - d]):min([c1 + s1 - i, c1 + d]), max([c2 - j + 1, c2 - d]):min([c2 + s2 - j, c2 + d]));
+        subaux = (subaux > (d - 1)) & (subaux <= d);
+        f = subdif(subaux);
     end
 end
+
+figure; imshow(imnorm(dif));
 
 % figure;
 % surf(dif);
@@ -39,4 +46,4 @@ end
 % 
 % figure; imshow(dif); hold on; plot(c, r, 'r*');
 
-figure; imshow(sgc); hold on; plot(c, r, 'r*');
+% figure; imshow(sgc); hold on; plot(c, r, 'r*');
