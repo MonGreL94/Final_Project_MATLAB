@@ -2,39 +2,62 @@ clear; close all; clc;
 
 im = imread('checkerboard.jpg');
 [th, sg, sgc] = cc_segm(im);
+% figure; imshow(imnorm(th));
+% figure; imshow(imnorm(sg));
 % figure; imshow(sgc);
 
 metric = 'chessboard';
 
-s = size(th);
-s1 = s(1);
-s2 = s(2);
-c1 = ceil(s1 / 2);
-c2 = ceil(s2 / 2);
-aux = zeros(s1, s2, 'double');
-aux(c1, c2) = 1;
+s = size(sg);
+rows = s(1);
+cols = s(2);
+cx = ceil(cols / 2);
+cy = ceil(rows / 2);
+
+aux = zeros(rows, cols, 'double');
+aux(cy, cx) = 1;
 aux = bwdist(aux, metric);
 % figure; imshow(imnorm(aux));
 
-tf = bwdist(not(th), metric);
-tb = bwdist(th, metric);
+tf = bwdist(not(sg), metric);
+tb = bwdist(sg, metric);
 dif = tf - tb;
+% figure; imshow(imnorm(tf));
+% figure; imshow(imnorm(tb));
 % figure; imshow(imnorm(dif));
 
-m = min(dif(:));
+M = get_max(abs(dif), 1);
+[r, c] = find(M == 255);
 
-for i=1:s1
-    for j=1:s2
-        v = dif(i, j);
-        d = ceil(abs(v));
-        subdif = dif(max([1, i - d]):min([s1, i + d]), max([1, j - d]):min([s2, j + d]));
-        subaux = aux(max([c1 - i + 1, c1 - d]):min([c1 + s1 - i, c1 + d]), max([c2 - j + 1, c2 - d]):min([c2 + s2 - j, c2 + d]));
+% for i=1:rows
+%     for j=1:cols
+%         d = ceil(abs(dif(i, j)));
+%         subdif = dif(max([1, i - d]):min([rows, i + d]), max([1, j - d]):min([cols, j + d]));
+%         subaux = aux(max([cy - i + 1, cy - d]):min([cy + rows - i, cy + d]), max([cx - j + 1, cx - d]):min([cx + cols - j, cx + d]));
+%         if strcmp(metric, 'euclidean')
+%             subaux = (subaux > (d - 1)) & (subaux <= d);
+%         else
+%             subaux = subaux == d;
+%         end
+%         f = subdif(subaux);
+%     end
+% end
+
+for k=1:length(r)
+    i = r(k);
+    j = c(k);
+    d = ceil(abs(dif(i, j)));
+    subdif = dif(max([1, i - d]):min([rows, i + d]), max([1, j - d]):min([cols, j + d]));
+    subaux = aux(max([cy - i + 1, cy - d]):min([cy + rows - i, cy + d]), max([cx - j + 1, cx - d]):min([cx + cols - j, cx + d]));
+    if strcmp(metric, 'euclidean')
         subaux = (subaux > (d - 1)) & (subaux <= d);
-        f = subdif(subaux);
+    else
+        subaux = subaux == d;
     end
+    f = subdif(subaux);
 end
 
-figure; imshow(imnorm(dif));
+% figure; imshow(imnorm(dif));
 
 % figure;
 % surf(dif);
