@@ -13,13 +13,8 @@ cols = size(sg, 2) + 2;
 cx = ceil(cols / 2);
 cy = ceil(rows / 2);
 
-aux1 = zeros(rows, cols, 'double');
-aux1(end, 1) = 1;
-aux1 = bwdist(aux1, metric);
-% figure; imshow(imnorm(aux));
-
 aux = zeros(rows, cols, 'double');
-aux(cy, cx) = 1;
+aux(end, 1) = 1;
 aux = bwdist(aux, metric);
 % figure; imshow(imnorm(aux));
 
@@ -39,7 +34,7 @@ dif = tf - tb;
 % figure; imshow(imnorm(dif));
 
 M = get_max(abs(dif), 1);
-[r, c] = find(M == 255);
+[r, c] = find(M);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DEBUGGING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % for i=2:400:rows - 1
@@ -72,36 +67,20 @@ M = get_max(abs(dif), 1);
 %     end
 % end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DEBUGGING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ck = zeros(length(r), 1);
+
 for k=1:length(r)
     i = r(k);
     j = c(k);
     d = ceil(abs(dif(i, j)));
     
-    subdif = dif(i - d:i + d,j - d:j + d);  % con l'aggiunta del padding si può evitare l'analisi degli indici agli estremi dell'immagine
+    subdif = dif(i-d:i+d, j-d:j+d);
     if strcmp(metric, 'chessboard')
-        fv = [subdif(1, :).'; subdif(2:end, end); flip(subdif(end, 1:end-1)).'; flip(subdif(2:end-1, 1))];  % CHESSBOARD (non necessita né subaux né aux)
+        fv = [subdif(1, :).'; subdif(2:end, end); flip(subdif(end, 1:end-1)).'; flip(subdif(2:end-1, 1))];
     elseif strcmp(metric, 'cityblock')
-        fv = [diag(subdif(1:d+1, d+1:end)); diag(rot90(subdif(d+2:end, d+1:end-1))); flip(diag(subdif(d+1:end-1, 1:d))); diag(rot90(subdif(2:d, 2:d), -1))];  % CITYBLOCK (non necessita né subaux né aux)
+        fv = [diag(subdif(1:d+1, d+1:end)); diag(rot90(subdif(d+2:end, d+1:end-1))); flip(diag(subdif(d+1:end-1, 1:d))); diag(rot90(subdif(2:d, 2:d), -1))];
     else
-        subaux = aux1(end-d:end, 1:1+d);
-        [ra, ca] = find(((subaux > (d - 1)) & (subaux <= d)) == 1);
+        subaux = aux(end-d:end, 1:1+d);
+        [ra, ca] = find((subaux > (d - 1)) & (subaux <= d));
         fv = [diag(subdif(ra, ca + d)); diag(subdif(d + d + 2 - flip(ra(1:end-1)), flip(ca(1:end-1)) + d)); diag(subdif(d + d + 2 - ra(2:end), d + 2 - ca(2:end))); diag(subdif(flip(ra(2:end-1)), d + 2 - flip(ca(2:end-1))))];
-        
-        subaux = rot90(aux(cy:cy + d, cx:cx + d));
-        [ra, ca] = find(((subaux > (d - 1)) & (subaux <= d)) == 1);
-        d1 = subdif(1:d+1, d+1:end);
-        d2 = rot90(subdif(d+1:end, d+1:end));
-        d3 = rot90(rot90(subdif(d+1:end, 1:d+1)));
-        d4 = rot90(subdif(1:d+1, 1:d+1), -1);
-        
-        f1 = diag(d1(ra, ca));
-        f2 = diag(d2(ra, ca));
-        f3 = diag(d3(ra, ca));
-        f4 = diag(d4(ra, ca));
-        
-        fv1 = [f1; f2(2:end); f3(2:end); f4(2:end-1)];
-        
-        ck(k) = isequal(fv, fv1);
     end
 end
