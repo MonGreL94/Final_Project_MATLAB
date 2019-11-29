@@ -13,6 +13,11 @@ cols = size(sg, 2) + 2;
 cx = ceil(cols / 2);
 cy = ceil(rows / 2);
 
+aux1 = zeros(rows, cols, 'double');
+aux1(end, 1) = 1;
+aux1 = bwdist(aux1, metric);
+% figure; imshow(imnorm(aux));
+
 aux = zeros(rows, cols, 'double');
 aux(cy, cx) = 1;
 aux = bwdist(aux, metric);
@@ -67,7 +72,7 @@ M = get_max(abs(dif), 1);
 %     end
 % end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DEBUGGING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+ck = zeros(length(r), 1);
 for k=1:length(r)
     i = r(k);
     j = c(k);
@@ -79,13 +84,24 @@ for k=1:length(r)
     elseif strcmp(metric, 'cityblock')
         fv = [diag(subdif(1:d+1, d+1:end)); diag(rot90(subdif(d+2:end, d+1:end-1))); flip(diag(subdif(d+1:end-1, 1:d))); diag(rot90(subdif(2:d, 2:d), -1))];  % CITYBLOCK (non necessita né subaux né aux)
     else
+        subaux = aux1(end-d:end, 1:1+d);
+        [ra, ca] = find(((subaux > (d - 1)) & (subaux <= d)) == 1);
+        fv = [diag(subdif(ra, ca + d)); diag(subdif(d + d + 2 - flip(ra(1:end-1)), flip(ca(1:end-1)) + d)); diag(subdif(d + d + 2 - ra(2:end), d + 2 - ca(2:end))); diag(subdif(flip(ra(2:end-1)), d + 2 - flip(ca(2:end-1))))];
+        
         subaux = rot90(aux(cy:cy + d, cx:cx + d));
-        subaux = (subaux > (d - 1)) & (subaux <= d);
-        [ra, ca] = find(subaux == 1);
-        f1 = diag(subdif(ra, ca + d));
-        f2 = diag(subdif(d + d + 2 - flip(ra(1:end-1)), flip(ca(1:end-1)) + d));
-        f3 = diag(subdif(d + d + 2 - ra(2:end), d + 2 - ca(2:end)));
-        f4 = diag(subdif(flip(ra(2:end-1)), d + 2 - flip(ca(2:end-1))));
-        fv = [f1; f2; f3; f4];
+        [ra, ca] = find(((subaux > (d - 1)) & (subaux <= d)) == 1);
+        d1 = subdif(1:d+1, d+1:end);
+        d2 = rot90(subdif(d+1:end, d+1:end));
+        d3 = rot90(rot90(subdif(d+1:end, 1:d+1)));
+        d4 = rot90(subdif(1:d+1, 1:d+1), -1);
+        
+        f1 = diag(d1(ra, ca));
+        f2 = diag(d2(ra, ca));
+        f3 = diag(d3(ra, ca));
+        f4 = diag(d4(ra, ca));
+        
+        fv1 = [f1; f2(2:end); f3(2:end); f4(2:end-1)];
+        
+        ck(k) = isequal(fv, fv1);
     end
 end
