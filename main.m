@@ -6,7 +6,7 @@ im = imread('checkerboard.jpg');
 % figure; imshow(imnorm(sg));
 % figure; imshow(sgc);
 
-metric = 'chessboard';
+metric = 'euclidean';
 
 rows = size(sg, 1) + 2;
 cols = size(sg, 2) + 2;
@@ -82,17 +82,25 @@ for k=1:length(r)
         subaux = rot90(aux(cy:cy + d, cx:cx + d));
         subaux = (subaux > (d - 1)) & (subaux <= d);
         [ra, ca] = find(subaux == 1);
-        
-        d1 = subdif(1:d+1, d+1:end);
-        d2 = rot90(subdif(d+1:end, d+1:end));
-        d3 = rot90(rot90(subdif(d+1:end, 1:d+1)));
-        d4 = rot90(subdif(1:d+1, 1:d+1), -1);
-        
-        f1 = diag(d1(ra, ca));
-        f2 = diag(d2(ra, ca));
-        f3 = diag(d3(ra, ca));
-        f4 = diag(d4(ra, ca));
-        
-        fv = [f1; f2(2:end); f3(2:end); f4(2:end-1)];
+        offr = d + d + 2;
+        offc = d + 2;
+        f1 = diag(subdif(ra, ca + d));
+        f2 = diag(subdif(offr - flip(ra(1:end-1)), flip(ca(1:end-1)) + d));
+        f3 = diag(subdif(offr - ra(2:end), offc - ca(2:end)));
+        f4 = diag(subdif(flip(ra(2:end-1)), offc - flip(ca(2:end-1))));
+        fv = [f1; f2; f3; f4];        
+%         d1 = subdif(1:d+1, d+1:end);
+%         d2 = rot90(subdif(d+1:end, d+1:end));
+%         d3 = rot90(rot90(subdif(d+1:end, 1:d+1)));
+%         d4 = rot90(subdif(1:d+1, 1:d+1), -1);
+%         
+%         f1 = diag(d1(ra, ca));
+%         f2 = diag(d2(ra, ca));
+%         f3 = diag(d3(ra, ca));
+%         f4 = diag(d4(ra, ca));
+%         
+%         fv1 = [f1; f2(2:end); f3(2:end); f4(2:end-1)];
+%         
+%         disp(fv == fv1);
     end
 end
