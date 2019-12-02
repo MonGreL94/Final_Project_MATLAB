@@ -6,7 +6,7 @@ im = imread('checkerboard.jpg');
 % figure; imshow(imnorm(sg));
 % figure; imshow(sgc);
 
-metric = 'chessboard';
+metric = 'cityblock';
 
 rows = size(sg, 1);
 cols = size(sg, 2);
@@ -35,30 +35,31 @@ dif = tf - tb;
 
 M = get_max(abs(dif), 1);
 [r, c] = find(M);
-
+%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DEBUGGING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% auxdbg = zeros(rows, cols, 'double');
-% auxdbg(cy, cx) = 1;
-% auxdbg = bwdist(auxdbg, metric);
-% % figure; imshow(imnorm(auxdbg));
-% for i=2:400:rows - 1
-%     for j=2:400:cols - 1
-%         d = ceil(abs(dif(i, j)))
-%         subdif = dif(i-d:i+d, j-d:j+d)
-%         subauxdbg = auxdbg(cy-d:cy+d, cx-d:cx+d)
-%         subauxdbg = (subauxdbg > (d - 1)) & (subauxdbg <= d)
-%         if strcmp(metric, 'chessboard')
-%             fv = [subdif(1, :).'; subdif(2:end, end); flip(subdif(end, 1:end-1)).'; flip(subdif(2:end-1, 1))]
-%         elseif strcmp(metric, 'cityblock')
-%             fv = [diag(subdif(1:d+1, d+1:end)); diag(rot90(subdif(d+2:end, d+1:end-1))); flip(diag(subdif(d+1:end-1, 1:d))); diag(rot90(subdif(2:d, 2:d), -1))]
-%         else
-%             subaux = aux(end-d:end, 1:1+d);
-%             [ra, ca] = find((subaux > (d - 1)) & (subaux <= d));
-%             fv = [diag(subdif(ra, ca + d)); diag(subdif(d + d + 2 - flip(ra(1:end-1)), flip(ca(1:end-1)) + d)); diag(subdif(d + d + 2 - ra(2:end), d + 2 - ca(2:end))); diag(subdif(flip(ra(2:end-1)), d + 2 - flip(ca(2:end-1))))]
-%         end
-%     end
-% end
+auxdbg = zeros(rows, cols, 'double');
+auxdbg(cy, cx) = 1;
+auxdbg = bwdist(auxdbg, metric);
+% figure; imshow(imnorm(auxdbg));
+for i=2:400:rows + 1
+    for j=2:400:cols + 1
+        d = ceil(abs(dif(i, j)))
+        subdif = dif(i-d:i+d, j-d:j+d)
+        subauxdbg = auxdbg(cy-d:cy+d, cx-d:cx+d)
+        subauxdbg = (subauxdbg > (d - 1)) & (subauxdbg <= d)
+        if strcmp(metric, 'chessboard')
+            fv = [subdif(1, :).'; subdif(2:end, end); flip(subdif(end, 1:end-1)).'; flip(subdif(2:end-1, 1))]
+        elseif strcmp(metric, 'cityblock')
+            fv = [diag(subdif(1:d+1, d+1:end)); diag(rot90(subdif(d+2:end, d+1:end-1))); flip(diag(subdif(d+1:end-1, 1:d))); diag(rot90(subdif(2:d, 2:d), -1))]
+        else
+            subaux = aux(end-d:end, 1:1+d);
+            [ra, ca] = find((subaux > (d - 1)) & (subaux <= d));
+            fv = [diag(subdif(ra, ca + d)); diag(subdif(d + d + 2 - flip(ra(1:end-1)), flip(ca(1:end-1)) + d)); diag(subdif(d + d + 2 - ra(2:end), d + 2 - ca(2:end))); diag(subdif(flip(ra(2:end-1)), d + 2 - flip(ca(2:end-1))))]
+        end
+    end
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DEBUGGING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
 X = zeros(((rows + 2) * 2) + (cols * 2) + 4, length(r), 'double');
 for k=1:length(r)
     i = r(k);
@@ -84,6 +85,47 @@ for k=1:length(r)
         X(end-2, k) = j - 1;
         X(end-1, k) = v;
         X(end, k) = length(fv);
+    end
+end
+%%
+sadds = zeros(rows, cols, 'uint8');
+cnt = 0;
+for i=2:rows + 1
+    for j=2:cols + 1
+        v = dif(i, j);
+        d = ceil(abs(v));
+        subdif = dif(i-d:i+d, j-d:j+d);
+        if strcmp(metric, 'chessboard')
+            fv = [subdif(1, :).'; subdif(2:end, end); flip(subdif(end, 1:end-1)).'; flip(subdif(2:end-1, 1))];
+        elseif strcmp(metric, 'cityblock')
+            fv = [diag(subdif(1:d+1, d+1:end)); diag(rot90(subdif(d+2:end, d+1:end-1))); flip(diag(subdif(d+1:end-1, 1:d))); diag(rot90(subdif(2:d, 2:d), -1))];
+        else
+            subaux = aux(end-d:end, 1:1+d);
+            [ra, ca] = find((subaux > (d - 1)) & (subaux <= d));
+            fv = [diag(subdif(ra, ca + d)); diag(subdif(d + d + 2 - flip(ra(1:end-1)), flip(ca(1:end-1)) + d)); diag(subdif(d + d + 2 - ra(2:end), d + 2 - ca(2:end))); diag(subdif(flip(ra(2:end-1)), d + 2 - flip(ca(2:end-1))))];
+        end
+        [m1, im1] = min(fv);
+        if m1 < v
+            fv = circshift(fv, -(im1 - 1));
+            iM1 = find(fv(2:end) > v) + 1;
+            if ~isempty(iM1)
+                iM1 = iM1(1);
+%                 M1 = fv(iM1);
+                im2 = find(fv(iM1+1:end) < v) + iM1;
+                if ~isempty(im2)
+                    im2 = im2(1);
+%                     m2 = fv(im2);
+                    M2 = max(fv(im2+1:end));
+                    if M2 > v
+                        if mod(cnt, 1000) == 0
+                            figure; plot(fv); hold on; plot(ones(length(fv), 1) * v);
+                        end
+                        sadds(i-1, j-1) = 255;
+                    end
+                end
+            end
+        end
+        cnt = cnt + 1;
     end
 end
 %%
@@ -131,7 +173,7 @@ for i=1:size(X, 2)
     end
 %     end
 end
-
+%%
 [rs, cs] = find(sadds);
 
 figure;
