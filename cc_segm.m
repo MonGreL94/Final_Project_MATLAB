@@ -1,18 +1,10 @@
-function [th, sg, sgc] = cc_segm(im)
-th = im2bw(im);
-sg = bwlabel(th);
-sgb = bwlabel(~th);
-sg(sg == 0) = sgb(sgb ~= 0) + max(sg(:));
-cs = linspace(0, 1, max(sg(:)) + 2);
-cs = cs(2:end-1);
-nc = length(cs);
-sgc = label2rgb(sg, [cs(randperm(nc))' cs(randperm(nc))' cs(randperm(nc))']);
-% r = sgc(:, :, 1);
-% g = sgc(:, :, 2);
-% b = sgc(:, :, 3);
-% bg = sg == 0;
-% r(bg) = 0;
-% g(bg) = 0;
-% b(bg) = 0;
-% sgc = cat(3, r, g, b);
+function [thresholded_img, segmented_img, color_segmented_img] = cc_segm(img)
+thresholded_img = im2bw(img);
+segmented_img = bwlabel(thresholded_img);
+segmented_img_black = bwlabel(~thresholded_img);
+segmented_img(segmented_img == 0) = segmented_img_black(segmented_img_black ~= 0) + max(segmented_img(:));
+colors = linspace(0, 1, max(segmented_img(:)) + 2);
+colors = colors(2:end-1);
+number_of_cc = length(colors);
+color_segmented_img = label2rgb(segmented_img, [colors(randperm(number_of_cc))' colors(randperm(number_of_cc))' colors(randperm(number_of_cc))']);
 end
