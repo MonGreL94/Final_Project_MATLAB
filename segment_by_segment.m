@@ -1,10 +1,10 @@
 clear; close all; clc;
 
-stack = load_stack('C:\Users\antonello\Downloads\Stack\labelled-stack.tif');
-segmented_img = stack(:, :, 1);
+% stack = load_stack('C:\Users\antonello\Downloads\Stack\labelled-stack.tif');
+% segmented_img = stack(:, :, 1);
 
-% img = imread('checkerboard.jpg');
-% [thresholded_img, segmented_img, color_segmented_img] = cc_segm(img);
+img = imread('checkerboard.jpg');
+[thresholded_img, segmented_img, color_segmented_img] = cc_segm(img);
 % figure; imshow(thresholded_img);
 % figure; imshow(imnorm(segmented_img));
 % figure; imshow(color_segmented_img);
@@ -15,6 +15,6 @@ saddle_points = get_saddle_points(segmented_img, 'euclidean');
 [saddle_points_rows, saddle_points_cols] = find(saddle_points);
 
 figure;
-imshow(segmented_img);
+imshow(imnorm(segmented_img));
 hold on;
 scatter(saddle_points_cols, saddle_points_rows, 'r*');

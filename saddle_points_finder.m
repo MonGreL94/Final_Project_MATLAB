@@ -9,7 +9,7 @@ for i=2:rows - 1
         d = ceil(v);
         if d ~= 0
             fv = get_fv(transformed_cropped_segmented_img(i-d:i+d, j-d:j+d), d, metric, aux);
-            if is_a_saddle_point(fv, v)
+            if is_a_saddle_point_v2(fv, v)
                 segment_saddle_points(i-1, j-1) = 255;
 %                 if mod(cnt, 10000) == 0
 %                     figure; plot(fv); hold on; plot(ones(length(fv), 1) * v);
