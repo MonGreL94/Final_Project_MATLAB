@@ -10,7 +10,7 @@ if strcmp(metric, 'euclidean') || strcmp(metric, 'quasi-euclidean')
     % figure; imshow(imnorm(aux));
 end
 
-saddle_points = zeros(rows, cols, 'uint8');
+saddle_points = zeros(rows, cols, 'logical');
 segments = unique(segmented_img);
 for s=1:length(segments)
     segment = segments(s);
