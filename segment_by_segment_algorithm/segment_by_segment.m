@@ -3,7 +3,7 @@ clear; close all; clc;
 % stack = load_stack('C:\Users\antonello\Downloads\Stack\labelled-stack.tif');
 % segmented_img = stack(:, :, 1);
 
-img = imread('checkerboard.jpg');
+img = imread('..\images\checkerboard.jpg');
 [thresholded_img, segmented_img, color_segmented_img] = cc_segm(img);
 % figure; imshow(thresholded_img);
 % figure; imshow(imnorm(segmented_img));
