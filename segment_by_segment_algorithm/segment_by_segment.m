@@ -10,7 +10,7 @@ img = imread('..\images\checkerboard.jpg');
 % figure; imshow(color_segmented_img);
 
 %% Metric choice and identification of all the saddle points of the segmented image
-saddle_points = get_saddle_points(segmented_img, 'euclidean');
+saddle_points = get_saddle_points(segmented_img, 'quasi-euclidean');
 %% Plotting the segmented image with all the saddle points
 [saddle_points_rows, saddle_points_cols] = find(saddle_points);
 

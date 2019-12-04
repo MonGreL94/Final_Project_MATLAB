@@ -1,10 +1,10 @@
 clear; close all; clc;
 
-im = imread('checkerboard.jpg');
+im = imread('..\images\checkerboard.jpg');
 [th, sg, sgc] = cc_segm(im);
-% figure; imshow(imnorm(th));
-% figure; imshow(imnorm(sg));
-% figure; imshow(sgc);
+% % figure; imshow(th);
+% % figure; imshow(imnorm(sg));
+% % figure; imshow(sgc);
 
 metric = 'cityblock';
 
@@ -37,27 +37,7 @@ M = get_max(abs(dif), 1);
 [r, c] = find(M);
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DEBUGGING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-auxdbg = zeros(rows, cols, 'double');
-auxdbg(cy, cx) = 1;
-auxdbg = bwdist(auxdbg, metric);
-% figure; imshow(imnorm(auxdbg));
-for i=2:400:rows + 1
-    for j=2:400:cols + 1
-        d = ceil(abs(dif(i, j)))
-        subdif = dif(i-d:i+d, j-d:j+d)
-        subauxdbg = auxdbg(cy-d:cy+d, cx-d:cx+d)
-        subauxdbg = (subauxdbg > (d - 1)) & (subauxdbg <= d)
-        if strcmp(metric, 'chessboard')
-            fv = [subdif(1, :).'; subdif(2:end, end); flip(subdif(end, 1:end-1)).'; flip(subdif(2:end-1, 1))]
-        elseif strcmp(metric, 'cityblock')
-            fv = [diag(subdif(1:d+1, d+1:end)); diag(rot90(subdif(d+2:end, d+1:end-1))); flip(diag(subdif(d+1:end-1, 1:d))); diag(rot90(subdif(2:d, 2:d), -1))]
-        else
-            subaux = aux(end-d:end, 1:1+d);
-            [ra, ca] = find((subaux > (d - 1)) & (subaux <= d));
-            fv = [diag(subdif(ra, ca + d)); diag(subdif(d + d + 2 - flip(ra(1:end-1)), flip(ca(1:end-1)) + d)); diag(subdif(d + d + 2 - ra(2:end), d + 2 - ca(2:end))); diag(subdif(flip(ra(2:end-1)), d + 2 - flip(ca(2:end-1))))]
-        end
-    end
-end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DEBUGGING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 X = zeros(((rows + 2) * 2) + (cols * 2) + 4, length(r), 'double');

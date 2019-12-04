@@ -4,7 +4,7 @@ cols = size(segmented_img, 2);
 
 % Auxiliary matrix for Euclidean and quasi-Euclidean metrics
 if strcmp(metric, 'euclidean') || strcmp(metric, 'quasi-euclidean')
-    aux = zeros(rows, cols, 'double');
+    aux = zeros(rows + 2, cols + 2, 'double');
     aux(end, 1) = 1;
     aux = bwdist(aux, metric);
     % figure; imshow(imnorm(aux));
@@ -24,14 +24,18 @@ for s=1:length(segments)
         max_row = max(segment_rows(:));
         min_col = min(segment_cols(:));
         max_col = max(segment_cols(:));
-        cropped_img_segment = ones(max_row - min_row + 3, max_col - min_col + 3, 'logical');
+        crop_rows = max_row - min_row + 3;
+        crop_cols = max_col - min_col + 3;
+        cropped_img_segment = ones(crop_rows, crop_cols, 'logical');
         cropped_img_segment(2:end-1, 2:end-1) = ~img_segment(min_row:max_row, min_col:max_col);
 %         figure; imshow(cropped_img_segment);
 %         figure; imshow(imnorm(bwdist(cropped_img_segment, metric)));
         if strcmp(metric, 'euclidean') || strcmp(metric, 'quasi-euclidean')
-            saddle_points(min_row:max_row, min_col:max_col) = saddle_points(min_row:max_row, min_col:max_col) + saddle_points_finder(bwdist(cropped_img_segment, metric), metric, aux);
+            saddle_points(min_row:max_row, min_col:max_col) = saddle_points(min_row:max_row, min_col:max_col) + saddle_points_finder(bwdist(cropped_img_segment, metric), metric, aux(end-crop_rows+1:end, 1:crop_cols));
+%             [d, matrix, subauxdbg, subauxdbg_contour, fv] = debugging(bwdist(cropped_img_segment, metric), metric, 400, aux(end-crop_rows+1:end, 1:crop_cols))
         else
-            saddle_points(min_row:max_row, min_col:max_col) = saddle_points(min_row:max_row, min_col:max_col) + saddle_points_finder(bwdist(cropped_img_segment, metric), metric, NaN);
+            saddle_points(min_row:max_row, min_col:max_col) = saddle_points(min_row:max_row, min_col:max_col) + saddle_points_finder(bwdist(cropped_img_segment, metric), metric);
+%             [d, matrix, subauxdbg, subauxdbg_contour, fv] = debugging(bwdist(cropped_img_segment, metric), metric, 400)
         end
     end
 end
