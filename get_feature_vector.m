@@ -1,4 +1,4 @@
-function fv = get_fv(matrix, d, metric, aux)
+function fv = get_feature_vector(matrix, d, metric, aux)
 if strcmp(metric, 'chessboard')
     fv = [matrix(1, :).'; matrix(2:end, end); flip(matrix(end, 1:end-1)).'; flip(matrix(2:end-1, 1))];
 elseif strcmp(metric, 'cityblock')
