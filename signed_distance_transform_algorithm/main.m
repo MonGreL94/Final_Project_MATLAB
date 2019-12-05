@@ -6,7 +6,7 @@ figure; imshow(th);
 figure; imshow(imnorm(sg));
 figure; imshow(sgc);
 
-metric = 'euclidean';
+metric = 'cityblock';
 
 rows = size(sg, 1);
 cols = size(sg, 2);
@@ -36,7 +36,7 @@ figure; imshow(imnorm(dif));
 M = get_max(abs(dif), 1);
 [r, c] = find(M);
 %%
-sadds = get_sadds(dif, 2, 2);
+sadds = get_sadds(dif, 1, 1);
 %%
 [rs, cs] = find(sadds);
 

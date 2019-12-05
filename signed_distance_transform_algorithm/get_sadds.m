@@ -7,6 +7,7 @@ for i=1+d1+off:rows-d1-off
         v = signed_transformed_img(i, j);
         if d1 == ceil(abs(v))
             d = d1 + off;
+    %         d = ceil(abs(v));
             n = signed_transformed_img(i-d, j);
             s = signed_transformed_img(i+d, j);
             w = signed_transformed_img(i, j-d);
