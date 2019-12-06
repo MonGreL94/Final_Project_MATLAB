@@ -18,7 +18,7 @@ for s=1:length(segments)
     % therefore it should not be considered
     if segment ~= 255
         img_segment = segmented_img == segment;
-        figure; imshow(img_segment);
+%         figure; imshow(img_segment);
         [segment_rows, segment_cols] = find(img_segment);
         min_row = min(segment_rows(:));
         max_row = max(segment_rows(:));
