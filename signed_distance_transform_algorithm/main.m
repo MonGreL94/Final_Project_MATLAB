@@ -36,7 +36,7 @@ figure; imshow(imnorm(dif));
 M = get_max(abs(dif), 1);
 [r, c] = find(M);
 %%
-sadds = get_sadds(dif, 1, 1);
+sadds = get_sadds(dif, 1, 0);
 %%
 [rs, cs] = find(sadds);
 
