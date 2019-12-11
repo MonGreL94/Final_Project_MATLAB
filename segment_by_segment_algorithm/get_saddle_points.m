@@ -4,7 +4,7 @@ cols = size(segmented_img, 2);
 
 % Auxiliary matrix for Euclidean and quasi-Euclidean metrics
 if strcmp(metric, 'euclidean') || strcmp(metric, 'quasi-euclidean')
-    aux = zeros(rows + 2, cols + 2, 'double');
+    aux = zeros(rows + 4, cols + 4, 'double');
     aux(end, 1) = 1;
     aux = bwdist(aux, metric);
     % figure; imshow(imnorm(aux));
@@ -24,10 +24,10 @@ for s=1:length(segments)
         max_row = max(segment_rows(:));
         min_col = min(segment_cols(:));
         max_col = max(segment_cols(:));
-        crop_rows = max_row - min_row + 3;
-        crop_cols = max_col - min_col + 3;
+        crop_rows = max_row - min_row + 5;
+        crop_cols = max_col - min_col + 5;
         cropped_img_segment = ones(crop_rows, crop_cols, 'logical');
-        cropped_img_segment(2:end-1, 2:end-1) = ~img_segment(min_row:max_row, min_col:max_col);
+        cropped_img_segment(3:end-2, 3:end-2) = ~img_segment(min_row:max_row, min_col:max_col);
 %         figure; imshow(cropped_img_segment);
 %         figure; imshow(imnorm(bwdist(cropped_img_segment, metric)));
         if strcmp(metric, 'euclidean') || strcmp(metric, 'quasi-euclidean')

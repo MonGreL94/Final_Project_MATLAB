@@ -1,8 +1,8 @@
 function is_a_saddle = is_a_saddle_point_d1(matrix, v)
 is_a_saddle = false;
 
-fv3 = get_feature_vector(matrix(2:4, 2:4), NaN, 'chessboard', NaN);
-fv5 = get_feature_vector(matrix, NaN, 'chessboard', NaN);
+fv3 = get_feature_vector(matrix(2:4, 2:4), 'chessboard');
+fv5 = get_feature_vector(matrix, 'chessboard');
 fv5 = fv5(1:2:end);
 
 mins = find(~fv3);
