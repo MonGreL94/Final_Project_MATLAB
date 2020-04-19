@@ -1,0 +1,118 @@
+metric = 
+
+    "euclidean"
+
+
+precision =
+
+    0.5951
+
+
+recall =
+
+    0.7348
+
+
+f1_score =
+
+    0.6576
+
+
+mean_error =
+
+    0.8630
+
+
+error_variance =
+
+    0.9224
+
+
+metric = 
+
+    "quasi-euclidean"
+
+
+precision =
+
+    0.5958
+
+
+recall =
+
+    0.7348
+
+
+f1_score =
+
+    0.6580
+
+
+mean_error =
+
+    0.8703
+
+
+error_variance =
+
+    0.9473
+
+
+metric = 
+
+    "chessboard"
+
+
+precision =
+
+    0.5674
+
+
+recall =
+
+    0.7889
+
+
+f1_score =
+
+    0.6601
+
+
+mean_error =
+
+    1.2396
+
+
+error_variance =
+
+    1.7670
+
+
+metric = 
+
+    "cityblock"
+
+
+precision =
+
+    0.6062
+
+
+recall =
+
+    0.7211
+
+
+f1_score =
+
+    0.6587
+
+
+mean_error =
+
+    0.9424
+
+
+error_variance =
+
+    1.0253

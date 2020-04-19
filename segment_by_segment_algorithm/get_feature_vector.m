@@ -1,10 +1,16 @@
-function fv = get_feature_vector(matrix, metric, d, aux)
-if strcmp(metric, 'chessboard')
-    fv = [matrix(1, :).'; matrix(2:end, end); flip(matrix(end, 1:end-1)).'; flip(matrix(2:end-1, 1))];
-elseif strcmp(metric, 'cityblock')
-    fv = [diag(matrix(1:d+1, d+1:end)); diag(rot90(matrix(d+2:end, d+1:end-1))); flip(diag(matrix(d+1:end-1, 1:d))); diag(rot90(matrix(2:d, 2:d), -1))];
+function fv_idx = get_feature_vector(matrix, metric, d, aux)
+if strcmp(metric, "chessboard")
+    fv_idx = [[matrix(1, :).'; matrix(2:end, end); flip(matrix(end, 1:end-1)).'; flip(matrix(2:end-1, 1))], ...
+        [ones(2*d+1, 1); (2:2*d+1).'; ones(2*d, 1)*(2*d+1); flip(2:2*d).'], ...
+        [(1:2*d+1).'; ones(2*d, 1)*(2*d+1); flip(1:2*d).'; ones(2*d-1, 1)]];
+elseif strcmp(metric, "cityblock")
+    fv_idx = [[diag(matrix(1:d+1, d+1:end)); diag(rot90(matrix(d+2:end, d+1:end-1))); flip(diag(matrix(d+1:end-1, 1:d))); diag(rot90(matrix(2:d, 2:d), -1))], ...
+        [(1:2*d+1).'; flip(2:2*d).'], ...
+        [(d+1:2*d+1).'; flip(1:2*d).'; (2:d).']];
 else
     [ra, ca] = find((aux > (d - 1)) & (aux <= d));
-    fv = [diag(matrix(ra, ca + d)); diag(matrix(d + d + 2 - flip(ra(1:end-1)), flip(ca(1:end-1)) + d)); diag(matrix(d + d + 2 - ra(2:end), d + 2 - ca(2:end))); diag(matrix(flip(ra(2:end-1)), d + 2 - flip(ca(2:end-1))))];
+    fv_idx = [[diag(matrix(ra, ca + d)); diag(matrix(d + d + 2 - flip(ra(1:end-1)), flip(ca(1:end-1)) + d)); diag(matrix(d + d + 2 - ra(2:end), d + 2 - ca(2:end))); diag(matrix(flip(ra(2:end-1)), d + 2 - flip(ca(2:end-1))))], ...
+        [ra; d + d + 2 - flip(ra(1:end-1)); d + d + 2 - ra(2:end); flip(ra(2:end-1))], ...
+        [ca + d; flip(ca(1:end-1)) + d; d + 2 - ca(2:end); d + 2 - flip(ca(2:end-1))]];
 end
 end
