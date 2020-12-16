@@ -3,7 +3,7 @@ clear; close all; clc;
 % stack = load_stack("..\images\labelled-stack.tif");
 % segmented_img = stack(:, :, 1);
 
-img = imread("..\images\checkerboard.jpg");
+img = imread("..\dataset\images\distortion02.jpg");
 [thresholded_img, segmented_img, color_segmented_img] = cc_segm(img);
 figure; imshow(thresholded_img);
 figure; imshow(segmented_img);
